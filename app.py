@@ -56,7 +56,7 @@ def gitpull():
         subprocess.run(['git', '-C', repo_path, 'pull'], check=True)
 
         # Reload the PythonAnywhere web app
-        subprocess.run(['/usr/local/bin/pa_reload_webapp', 'mikedorin.pythonanywhere.com'], check=True)
+        #subprocess.run(['/usr/local/bin/pa_reload_webapp', 'mikedorin.pythonanywhere.com'], check=True)
 
         return '✅ Update and reload triggered successfully.', 200
 
