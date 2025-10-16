@@ -13,7 +13,7 @@ tasks = [
 
 @app.route('/')
 def home():
-    return "Welcome to the DevOps Demo App!! Version 3"
+    return "Welcome to the DevOps Demo App!! Version 5"
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
@@ -56,7 +56,7 @@ def gitpull():
         subprocess.run(['git', '-C', repo_path, 'pull'], check=True)
 
         # Reload the PythonAnywhere web app
-        subprocess.run(['pa_reload_webapp', 'mikedorin.pythonanywhere.com'], check=True)
+        subprocess.run(['/usr/local/bin/pa_reload_webapp', 'mikedorin.pythonanywhere.com'], check=True)
 
         return '✅ Update and reload triggered successfully.', 200
 
