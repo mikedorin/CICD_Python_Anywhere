@@ -31,39 +31,36 @@ WEBHOOK_SECRET = os.environ.get("GITHUB_WEBHOOK_SECRET", "supersecret")
 
 @app.route('/gitpull', methods=['POST'])
 def gitpull():
-    # --- Validate GitHub HMAC signature ---
-    signature_header = request.headers.get('X-Hub-Signature-256')
+    # --- Get whichever signature GitHub sent ---
+    signature_header = request.headers.get('X-Hub-Signature-256') or request.headers.get('X-Hub-Signature')
     if not signature_header:
         abort(403)
 
     try:
-        sha_name, signature = signature_header.split('=')
+        algo, signature = signature_header.split('=')
     except ValueError:
         abort(403)
 
-    if sha_name != 'sha256':
+    if algo not in ('sha256', 'sha1'):
         abort(403)
 
-    mac = hmac.new(WEBHOOK_SECRET.encode(), msg=request.data, digestmod=hashlib.sha256)
+    # --- Compute HMAC with same algorithm ---
+    digestmod = hashlib.sha256 if algo == 'sha256' else hashlib.sha1
+    mac = hmac.new(WEBHOOK_SECRET.encode(), msg=request.data, digestmod=digestmod)
+
+    # --- Compare signatures safely ---
     if not hmac.compare_digest(mac.hexdigest(), signature):
+        print("Signature mismatch! Computed:", mac.hexdigest())
         abort(403)
 
-    # --- Run git pull and reload web app ---
+    # --- Pull repo ---
     try:
         repo_path = '/home/mikedorin/CICD_Python_Anywhere'
-
-        # Pull the latest code
         subprocess.run(['git', '-C', repo_path, 'pull'], check=True)
-
-        # Reload the PythonAnywhere web app
-        #subprocess.run(['/usr/local/bin/pa_reload_webapp', 'mikedorin.pythonanywhere.com'], check=True)
-
-        return '✅ Update and reload triggered successfully.', 200
-
+        return '✅ Code updated via git pull.', 200
     except subprocess.CalledProcessError as e:
-        return f'❌ Subprocess error: {e}', 500
-    except Exception as e:
-        return f'⚠️ Unexpected error: {e}', 500
+        return f'❌ Git pull failed: {e}', 500
+
 
 
 if __name__ == '__main__':
