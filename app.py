@@ -6,6 +6,7 @@ import os
 
 app = Flask(__name__)
 
+
 tasks = [
     {"id": 1, "task": "Learn DevOps", "done": False},
     {"id": 2, "task": "Deploy to PythonAnywhere", "done": False}
@@ -13,7 +14,7 @@ tasks = [
 
 @app.route('/')
 def home():
-    return "Welcome to the DevOps Demo App!! Version 9"
+    return "Welcome to the DevOps Demo App!! Version 10. Changed the version."
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
