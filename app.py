@@ -9,7 +9,7 @@ tasks = [
 
 @app.route('/')
 def home():
-    return "Welcome to the DevOps Demo App!"
+    return "Welcome to the DevOps Demo App!! Version 2"
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
